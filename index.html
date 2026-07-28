@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { margin: 0; background: #2b2b2b; overflow: hidden; }
+  .ticker-wrap {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    box-sizing: border-box;
+  }
+  .ticker {
+    display: inline-block;
+    padding-left: 100%;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    font-weight: bold;
+    animation: none;
+  }
+  .ticker.scrolling {
+    animation: ticker-scroll 45s linear 1;
+  }
+  @keyframes ticker-scroll {
+    0%   { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-100%, 0, 0); }
+  }
+</style>
+</head>
+<body>
+  <div class="ticker-wrap">
+    <div class="ticker" id="tickerText">Loading...</div>
+  </div>
+
+<script>
+  // ---- Edit this list with your own safety tips ----
+  const safetyTips = [
+    "⚠️ Always wear PPE when inspecting field assets.",
+    "⚠️ Report unsafe conditions immediately — don't wait for the next shift.",
+    "⚠️ Check for overhead hazards before raising equipment.",
+    "⚠️ Confirm lockout/tagout procedures before servicing machinery.",
+    "⚠️ Keep emergency contact numbers accessible at all times.",
+    "⚠️ Inspect ladders and scaffolding before each use.",
+    "⚠️ Never bypass a safety guard, even temporarily.",
+    "⚠️ Stay clear of trenches and excavations without proper shoring.",
+    "⚠️ Two-way radios should be tested before entering low-signal areas.",
+    "⚠️ Take breaks — fatigue is a leading cause of field incidents."
+  ];
+
+  const tickerEl = document.getElementById('tickerText');
+  let remaining = [];
+
+  // Fisher-Yates shuffle
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function nextTip() {
+    if (remaining.length === 0) {
+      remaining = shuffle(safetyTips);
+    }
+    return remaining.pop();
+  }
+
+  function showNextTip() {
+    // Remove animation, reset position, force reflow
+    tickerEl.classList.remove('scrolling');
+    tickerEl.style.transform = 'translate3d(0,0,0)';
+    tickerEl.textContent = nextTip();
+
+    // Force reflow so the animation restarts cleanly
+    void tickerEl.offsetWidth;
+
+    tickerEl.classList.add('scrolling');
+  }
+
+  // Kick off the first tip, then advance when each scroll finishes
+  showNextTip();
+  tickerEl.addEventListener('animationend', showNextTip);
+</script>
+</body>
+</html>
